@@ -2,7 +2,7 @@
 
 **97 researchers · 383 verbatim sourced quotes · 336 interviews**
 
-Curated by **AI AGI Engineer** (Aniruddha Adak). Roles verified October 2026.
+Curated by **AI AGI Engineer**. Roles verified October 2026.
 
 **Live site:** https://agi-asi.github.io/Rooftop-Parkour/ai-safety-researchers/
 
