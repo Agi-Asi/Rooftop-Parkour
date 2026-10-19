@@ -2564,7 +2564,8 @@ html.x-vlock { overflow: hidden; }
         function step(d) {
           var list = navList(), i = list.indexOf(current);
           var next = list[(i + d + list.length) % list.length];
-          location.replace("#" + next.slug);
+          try { history.replaceState(null, "", location.pathname + location.search + "#" + encodeURIComponent(next.slug)); } catch (e) { location.replace("#" + next.slug); return; }
+          window.dispatchEvent(new HashChangeEvent("hashchange"));
         }
         document.getElementById("pro-prev").onclick = function () { step(-1); };
         document.getElementById("pro-next").onclick = function () { step(1); };
@@ -3658,7 +3659,7 @@ html.x-vlock { overflow: hidden; }
       toast(ok ? okMsg : "Couldn’t copy. The link is in the address bar.");
     }
     if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, fallback);
+      toast(okMsg); navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, fallback);
     } else fallback();
   }
 
@@ -4226,8 +4227,8 @@ html.x-vlock { overflow: hidden; }
     var hl = hover ? hover : null;
     links.forEach(function (l) {
       var on = focusOrg ? l.orgs.indexOf(focusOrg) > -1 : hl ? l.s === hl || l.t === hl : true;
-      ctx.globalAlpha = on ? (focusOrg || hl ? 0.85 : 0.6) : 0.08;
-      ctx.strokeStyle = on && (focusOrg || hl) ? COL.text : COL.line;
+      ctx.globalAlpha = on ? (focusOrg || hl ? 0.85 : 0.4) : 0.08;
+      ctx.strokeStyle = on && (focusOrg || hl) ? COL.text : COL.sub;
       ctx.beginPath(); ctx.moveTo(l.s.x, l.s.y); ctx.lineTo(l.t.x, l.t.y); ctx.stroke();
     });
     nodes.forEach(function (n) {
