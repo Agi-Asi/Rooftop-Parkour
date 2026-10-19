@@ -1243,6 +1243,22 @@ html.x-vlock { overflow: hidden; }
 .x-watchbtn { cursor: pointer; }
 @media (max-width: 599px) { .x-vmodal { padding: 12px; } .x-vmodal__stage { max-height: none; } }
 @media (prefers-reduced-motion: reduce) { .x-quiz__in, .x-quiz__reveal, .x-quiz__choice.is-right, .x-quiz__choice.is-wrong { animation: none; } .x-vmodal, .x-vmodal__panel { transition: none; } }
+
+/* Polish: profile overlay contrast in dark theme (light values unchanged) */
+.x-overlay { --text-secondary: light-dark(#636366, #c7c7cc); --text-tertiary: light-dark(#1d1d1f4d, #f5f5f799); }
+.x-overlay .aside { border-color: light-dark(#1d1d1f24, #f5f5f773); }
+.x-overlay .timeline > li { border-bottom-color: light-dark(#1d1d1f12, #f5f5f766); }
+.x-overlay .x-tabs { border-bottom-color: light-dark(#1d1d1f12, #f5f5f766); }
+
+/* Polish: light theme marks and links (dark values unchanged) */
+.x-legend i { border-color: light-dark(color-mix(in srgb, var(--c) 62%, #000), var(--c)); }
+.x-quiz__dots li:not(.is-now):not(.is-right):not(.is-wrong) { border-color: light-dark(#6e6e73, #f5f5f724); background: light-dark(#d1d1d6, #1d1d1f); }
+.x-quiz__choice kbd { border-color: light-dark(#6e6e73, #f5f5f724); color: light-dark(#1d1d1f, #a1a1a6); }
+.x-rtable a.link { color: light-dark(color-mix(in srgb, var(--chart-accent) 72%, #000), var(--text-primary)); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+
+/* Polish: anchored content clears the sticky header */
+html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 84px); }
+.section, .x-more, .x-more .btn, main [id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 84px); }
 </style>
   </head>
   <body>
@@ -1457,7 +1473,7 @@ html.x-vlock { overflow: hidden; }
           </div>
         </section>
 
-        <section class="section" id="atlas" data-nav="Visual Atlas">
+        <section class="section" id="atlas" data-nav="Atlas">
           <div class="head">
             <p class="head__eyebrow">Visual Atlas</p>
             <h2>The same people as a network, a spectrum, a timeline and a map.</h2>
@@ -2565,8 +2581,7 @@ html.x-vlock { overflow: hidden; }
         function step(d) {
           var list = navList(), i = list.indexOf(current);
           var next = list[(i + d + list.length) % list.length];
-          try { history.replaceState(null, "", location.pathname + location.search + "#" + encodeURIComponent(next.slug)); } catch (e) { location.replace("#" + next.slug); return; }
-          window.dispatchEvent(new HashChangeEvent("hashchange"));
+          try { history.replaceState(null, "", location.pathname + location.search + "#" + encodeURIComponent(next.slug)); } catch (e) { location.replace("#" + next.slug); return; } window.dispatchEvent(new HashChangeEvent("hashchange"));
         }
         document.getElementById("pro-prev").onclick = function () { step(-1); };
         document.getElementById("pro-next").onclick = function () { step(1); };
@@ -3079,6 +3094,11 @@ html.x-vlock { overflow: hidden; }
         if (st.cat && x.r.category !== st.cat) return false;
         return !t.length || matches(x.hay, t);
       });
+      var allSpan = cats.querySelector('[data-qcat=""] span');
+      if (allSpan) allSpan.textContent = Q.filter(function (x) {
+        if (st.person && x.r.slug !== st.person) return false;
+        return !t.length || matches(x.hay, t);
+      }).length;
       list.sort(st.sort === "short"
         ? function (a, b) { return a.text.length - b.text.length || a.i - b.i; }
         : function (a, b) { return a.r.name.localeCompare(b.r.name) || a.i - b.i; });
@@ -3231,6 +3251,8 @@ html.x-vlock { overflow: hidden; }
             apply();
           },
           onHover: function (e, els) { if (e.native && e.native.target) e.native.target.style.cursor = els && els.length ? "pointer" : "default"; },
+          // Outlet names such as "80,000 Hours" are names, not numbers: keep them in the category-label font.
+          scales: { y: { ticks: { font: function () { return { family: getComputedStyle(document.documentElement).getPropertyValue("--sans").trim(), size: 14 }; } } } },
           plugins: { legend: { display: false }, datalabels: Hark.labels.values }
         }
       });
@@ -3976,8 +3998,12 @@ html.x-vlock { overflow: hidden; }
       if (c) {
         var url = location.href.split("#")[0] + "#" + encodeURIComponent(c.getAttribute("data-copylink"));
         copyText(url, "Link copied");
-        var lab = c.querySelector("span");
-        if (lab) { lab.textContent = "Link copied ✓"; clearTimeout(c._t); c._t = setTimeout(function () { lab.textContent = "Copy link"; }, 3000); }
+        var lbl = c.querySelector("span");
+        if (lbl) {
+          lbl.textContent = "Link copied ✓";
+          clearTimeout(c._t);
+          c._t = setTimeout(function () { lbl.textContent = "Copy link"; }, 3000);
+        }
       }
     });
     body.addEventListener("keydown", function (e) {
