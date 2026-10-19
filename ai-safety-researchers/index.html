@@ -2486,6 +2486,7 @@ html.x-vlock { overflow: hidden; }
           if (orgs.length) {
             h += block("Career", '<ol class="timeline">' + orgs.map(function (o, i) {
               var m = String(o).match(/^(.*?)\s*\(([^()]*)\)\s*$/);
+              if (m && !/\d|present|now/i.test(m[2])) m = null;
               var what = m ? m[1] : o, when = m ? m[2] : "—";
               var cur = i === 0 && /[–-]\s*$|present|now/i.test(when);
               return "<li" + (cur ? ' class="is-current"' : "") + '><p class="timeline__when">' + esc(when) + '</p><div class="timeline__what">' + esc(what) + "</div></li>";
