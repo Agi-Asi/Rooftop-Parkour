@@ -2574,7 +2574,7 @@ html.x-vlock { overflow: hidden; }
         document.addEventListener("keydown", function (e) {
           if (overlay.hidden) return;
           if (e.key === "Escape") { e.preventDefault(); clearHash(); }
-          else if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && !/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) step(e.key === "ArrowLeft" ? -1 : 1);
+          else if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && !/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) step(e.key === "ArrowLeft" ? -1 : 1);
           else if (e.key === "Tab") {
             var f = drawer.querySelectorAll('a[href], button:not([disabled])');
             if (!f.length) return;
@@ -3975,6 +3975,8 @@ html.x-vlock { overflow: hidden; }
       if (c) {
         var url = location.href.split("#")[0] + "#" + encodeURIComponent(c.getAttribute("data-copylink"));
         copyText(url, "Link copied");
+        var lab = c.querySelector("span");
+        if (lab) { lab.textContent = "Link copied ✓"; clearTimeout(c._t); c._t = setTimeout(function () { lab.textContent = "Copy link"; }, 3000); }
       }
     });
     body.addEventListener("keydown", function (e) {
