@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Guardians of AI — Who's Who of AI Safety &amp; Alignment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap"
+    />
+    <link rel="stylesheet" href="hark.css" />
+    <link rel="stylesheet" href="hark-charts.css" />
+    <link rel="stylesheet" href="hark-hero.css" />
+    <style>
+      /* Quote wall */
+      .x-quotes { position: relative; padding: clamp(24px, 4vw, 44px); border-radius: var(--r-l); background: var(--fill-tertiary); }
+      .x-quotes__track { display: grid; }
+      .x-slide { grid-area: 1 / 1; display: grid; align-content: space-between; gap: 24px; margin: 0; opacity: 0; visibility: hidden; transition: opacity 400ms var(--ease-out), visibility 0s linear 400ms; }
+      .x-slide.is-active { opacity: 1; visibility: visible; transition: opacity 400ms var(--ease-out); }
+      .x-slide blockquote { margin: 0; font: var(--weight-regular) var(--size-figure)/var(--lh) var(--sans); text-wrap: pretty; max-width: 40ch; }
+      .x-slide blockquote::before { content: "\201C"; }
+      .x-slide blockquote::after { content: "\201D"; }
+      .x-slide figcaption { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font: var(--type-small); color: var(--text-secondary); }
+      .x-slide figcaption strong { color: var(--text-primary); font-weight: var(--weight-medium); }
+      .x-slide__who { display: grid; gap: 2px; flex: 1 1 220px; min-width: 0; }
+      .x-quotes__bar { display: flex; align-items: center; gap: 8px; margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--stroke-secondary); }
+      .x-quotes__count { margin-right: auto; font: var(--type-tag); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+      .x-iconbtn { display: inline-grid; place-items: center; min-width: var(--tap); min-height: var(--tap); padding: 0 12px; border-radius: var(--r-pill); border: 1px solid var(--stroke-primary); background: var(--fill-primary-on); color: var(--text-primary); font: var(--type-tag); cursor: pointer; }
+      .x-iconbtn:hover { box-shadow: inset 0 0 0 100px var(--hover-wash); }
+
+      /* Avatars */
+      .x-av { flex: none; width: var(--av, 72px); height: var(--av, 72px); border-radius: 50%; object-fit: cover; background: var(--fill-primary-on); }
+      .x-av--init { display: grid; place-items: center; background: linear-gradient(135deg, var(--hero-surface), color-mix(in srgb, var(--hero-surface) 72%, var(--hero-text))); color: var(--hero-text); font: var(--weight-medium) calc(var(--av, 72px) * 0.36)/1 var(--sans); letter-spacing: 0.02em; }
+
+      /* Directory controls */
+      .x-tools { display: grid; gap: 14px; }
+      .x-tools__row { display: flex; flex-wrap: wrap; gap: 10px; }
+      .x-field { min-height: var(--tap); padding: 0 16px; border-radius: var(--r-pill); border: 1px solid var(--stroke-primary); background: var(--fill-primary-on); color: var(--text-primary); font: var(--type-body); }
+      .x-field:focus-visible { outline: 2px solid var(--fill-primary); outline-offset: 2px; }
+      .x-search { flex: 1 1 280px; min-width: 0; }
+      .x-sort { flex: 0 0 auto; padding-right: 12px; }
+      .x-filters { display: flex; flex-wrap: wrap; gap: 6px; }
+      .x-filter { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 6px 14px; border-radius: var(--r-pill); border: 0; background: var(--fill-tertiary); color: var(--text-primary); font: var(--type-tag); cursor: pointer; }
+      .x-filter span { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+      .x-filter:hover { box-shadow: inset 0 0 0 100px var(--hover-wash); }
+      .x-filter[aria-pressed="true"] { background: var(--fill-primary); color: var(--text-primary-on); }
+      .x-filter[aria-pressed="true"] span { color: var(--text-secondary-on); }
+      @media (pointer: coarse), (max-width: 599px) { .x-filter { min-height: var(--tap); } }
+      .x-status { font: var(--type-small); color: var(--text-secondary); }
+
+      /* Card grid */
+      .x-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 16px; }
+      .x-card { display: grid; align-content: start; gap: 10px; padding: 22px 22px 20px; border: 0; border-radius: var(--r-m); background: var(--fill-tertiary); color: var(--text-primary); font: var(--type-body); text-align: left; cursor: pointer; transition: transform var(--dur-quick) var(--ease-out), box-shadow var(--dur-quick) ease; }
+      .x-card:hover { box-shadow: inset 0 0 0 100px var(--hover-wash); transform: translateY(-2px); }
+      @media (prefers-reduced-motion: reduce) { .x-card { transition: none; } .x-card:hover { transform: none; } }
+      .x-card .x-av { margin-bottom: 4px; }
+      .x-card h3 { font: var(--type-heading); }
+      .x-card__role { font: var(--type-small); color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+      .x-card__known { font: var(--type-small); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+      .x-card .pill { justify-self: start; margin-top: 4px; }
+      .x-empty { padding: 32px 0; color: var(--text-secondary); }
+
+      /* Organisations */
+      .x-orgs { display: flex; flex-wrap: wrap; gap: 6px; align-content: start; }
+      .x-orgs .x-filter { min-height: 32px; }
+      @media (pointer: coarse), (max-width: 599px) { .x-orgs .x-filter { min-height: var(--tap); } }
+      .x-orgbox { padding: 20px; border-radius: var(--r-m); background: var(--fill-tertiary); }
+      .x-orgbox .x-filter { background: var(--fill-primary-on); }
+      .x-orgbox h3 { font: var(--type-label); margin-bottom: 4px; }
+      .x-orgbox .fineprint { font-size: var(--size-caption); margin-bottom: 14px; }
+
+      /* Profile drawer */
+      .x-overlay { position: fixed; inset: 0; z-index: 100; display: flex; justify-content: flex-end; background: color-mix(in srgb, var(--hero-surface) 45%, transparent); opacity: 0; transition: opacity 220ms var(--ease-out); }
+      .x-overlay[hidden] { display: none; }
+      .x-overlay.is-open { opacity: 1; }
+      .x-drawer { width: min(860px, 100%); height: 100%; overflow-y: auto; overscroll-behavior: contain; background: var(--fill-primary-on); box-shadow: var(--hark-shadow); transform: translateX(24px); transition: transform 260ms var(--ease-out); }
+      .x-overlay.is-open .x-drawer { transform: none; }
+      @media (prefers-reduced-motion: reduce) { .x-overlay, .x-drawer { transition: none; } }
+      .x-drawer__bar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 12px var(--gutter); background: var(--mat-agent); -webkit-backdrop-filter: var(--hark-blur); backdrop-filter: var(--hark-blur); border-bottom: 1px solid var(--stroke-secondary); }
+      .x-drawer__pos { margin-right: auto; font: var(--type-tag); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+      .x-drawer__body { display: grid; gap: 36px; padding: clamp(24px, 4vw, 40px) var(--gutter) 56px; }
+      .x-pro__head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 24px; align-items: center; }
+      .x-pro__head .x-av { --av: clamp(112px, 18vw, 168px); }
+      .x-pro__head h2 { font: var(--type-display); }
+      .x-pro__meta { display: grid; gap: 10px; }
+      .x-pro__role { font: var(--type-lede); font-weight: var(--weight-regular); color: var(--text-secondary); }
+      .x-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+      @media (max-width: 599px) { .x-pro__head { grid-template-columns: 1fr; } }
+      .x-block { display: grid; gap: 14px; }
+      .x-block > h3 { font: var(--type-heading); padding-top: 20px; border-top: 1px solid var(--stroke-secondary); }
+      .x-honours { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
+      .x-quote { margin: 0; padding: 4px 0 4px 18px; border-left: 2px solid var(--stroke-primary); display: grid; gap: 10px; }
+      .x-quote blockquote { margin: 0; font-size: var(--size-prose); }
+      .x-quote figcaption { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font: var(--type-small); color: var(--text-secondary); }
+      .x-ivs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 14px; }
+      .x-iv { display: grid; align-content: start; border-radius: var(--r-m); background: var(--fill-tertiary); overflow: hidden; }
+      .x-iv__thumb { position: relative; display: block; aspect-ratio: 16 / 9; background: var(--hero-surface); }
+      .x-iv__thumb img { width: 100%; height: 100%; object-fit: cover; }
+      .x-iv__play { position: absolute; inset: 0; display: grid; place-items: center; }
+      .x-iv__play span { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--hero-glass); border: 1px solid var(--hero-glass-stroke); -webkit-backdrop-filter: var(--hark-blur); backdrop-filter: var(--hark-blur); color: var(--hero-text); }
+      .x-iv__body { display: grid; gap: 8px; padding: 14px 16px 16px; }
+      .x-iv__body p { font: var(--type-label); }
+      .x-iv__body small { color: var(--text-secondary); }
+      .x-iv__body .btn { justify-self: start; }
+      .x-works { list-style: none; margin: 0; padding: 0; }
+      .x-works li { display: flex; gap: 12px; align-items: baseline; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--stroke-secondary); }
+      .x-works li:last-child { border-bottom: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="page" id="top">
+      <header class="nav glass" data-auto></header>
+      <main class="main">
+        <section class="hero">
+          <img class="hero__img" src="hero.jpg" alt="A dark research hall around a glowing neural sphere" />
+          <div class="hero__copy">
+            <p class="hero__eyebrow">Who's Who of AI Safety &amp; Alignment</p>
+            <h1>The Guardians of AI</h1>
+            <p class="hero__sub">97 researchers and voices working to keep advanced AI safe — with their words, interviews and work.</p>
+            <p class="hero__meta">Lab safety teams · academics · independent orgs · policy · pioneers</p>
+          </div>
+          <aside class="callout" aria-label="Start here">
+            <p class="callout__head"><span class="hark-mark" data-size="16"></span> Start here</p>
+            <p class="callout__lead"><strong>Search by name, lab or idea.</strong> Open any card for quotes, interviews and key work.</p>
+            <a class="btn" href="#directory">Open the directory</a>
+          </aside>
+        </section>
+
+        <section class="stats" aria-label="The directory in numbers">
+          <div class="stat"><span class="stat__fig" data-stat="people">97</span><span class="stat__label">People</span></div>
+          <div class="stat"><span class="stat__fig" data-stat="quotes">383</span><span class="stat__label">Verbatim quotes</span></div>
+          <div class="stat"><span class="stat__fig" data-stat="interviews">336</span><span class="stat__label">Interviews &amp; talks</span></div>
+          <div class="stat"><span class="stat__fig" data-stat="cats">6</span><span class="stat__label">Categories</span></div>
+        </section>
+
+        <section class="section" id="quotes" data-nav="Quotes">
+          <div class="head">
+            <p class="head__eyebrow">In their own words</p>
+            <h2>What the people closest to the problem actually said.</h2>
+            <p class="head__sub">Every quote links to its source.</p>
+          </div>
+          <div class="x-quotes" aria-roledescription="carousel" aria-label="Quotes">
+            <div class="x-quotes__track" id="quote-track" aria-live="off"></div>
+            <div class="x-quotes__bar">
+              <span class="x-quotes__count" id="quote-count"></span>
+              <button class="x-iconbtn" type="button" id="quote-pause" aria-label="Pause rotation">Pause</button>
+              <button class="x-iconbtn" type="button" id="quote-prev" aria-label="Previous quote">&larr;</button>
+              <button class="x-iconbtn" type="button" id="quote-next" aria-label="Next quote">&rarr;</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="directory" data-nav="Directory">
+          <div class="head">
+            <p class="head__eyebrow">The directory</p>
+            <h2>Find anyone by name, organisation or idea.</h2>
+            <p class="head__sub">Open a card for the full profile; every profile has its own link.</p>
+          </div>
+          <div class="x-tools">
+            <div class="x-tools__row">
+              <input class="x-field x-search" id="q" type="search" placeholder="Search names, orgs, ideas…" aria-label="Search the directory" autocomplete="off" />
+              <select class="x-field x-sort" id="sort" aria-label="Sort">
+                <option value="az">Sort: A–Z</option>
+                <option value="cat">Sort: Category</option>
+              </select>
+            </div>
+            <div class="x-filters" id="filters" role="group" aria-label="Filter by category"></div>
+            <p class="x-status" id="status" aria-live="polite"></p>
+          </div>
+          <div class="x-grid" id="grid"></div>
+        </section>
+
+        <section class="section" id="field" data-nav="The field">
+          <div class="head">
+            <p class="head__eyebrow">Map of the field</p>
+            <h2 id="field-title">Where the people in this directory sit.</h2>
+            <p class="head__sub">Tap an organisation to see its people in the directory.</p>
+          </div>
+          <div class="pair">
+            <figure class="chart">
+              <figcaption class="chart__cap" id="cat-cap">People per category<small>Number of people in the directory</small></figcaption>
+              <div class="chart__canvas chart__canvas--tall"><canvas id="cat-chart" role="img" aria-label="People per category in the directory"></canvas></div>
+            </figure>
+            <div class="x-orgbox">
+              <h3>Organisations named in current roles</h3>
+              <p class="fineprint">People whose current role mentions each one.</p>
+              <div class="x-orgs" id="orgs"></div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer class="foot">
+        <p><strong>Curated by AI AGI Engineer</strong> · Research verified Oct 2026 · Every quote verbatim with its source link.<br />Roles change fast; checked against 2025–2026 sources.</p>
+        <nav aria-label="Back to sections" data-auto></nav>
+      </footer>
+    </div>
+
+    <div class="x-overlay" id="overlay" hidden>
+      <div class="x-drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="pro-name">
+        <div class="x-drawer__bar">
+          <span class="x-drawer__pos" id="pro-pos"></span>
+          <button class="x-iconbtn" type="button" id="pro-prev" aria-label="Previous person">&larr; Prev</button>
+          <button class="x-iconbtn" type="button" id="pro-next" aria-label="Next person">Next &rarr;</button>
+          <button class="x-iconbtn" type="button" id="pro-close" aria-label="Close profile">Close ✕</button>
+        </div>
+        <div class="x-drawer__body" id="pro-body"></div>
+      </div>
+    </div>
+
+    <div id="photo-bank" hidden>
+      <img data-p="adam-gleave.jpg" src="adam-gleave.jpg" alt="" loading="lazy" />
+      <img data-p="ajeya-cotra.jpg" src="ajeya-cotra.jpg" alt="" loading="lazy" />
+      <img data-p="alan-turing.jpg" src="alan-turing.jpg" alt="" loading="lazy" />
+      <img data-p="allan-dafoe.jpg" src="allan-dafoe.jpg" alt="" loading="lazy" />
+      <img data-p="amanda-askell.jpg" src="amanda-askell.jpg" alt="" loading="lazy" />
+      <img data-p="anca-dragan.jpg" src="anca-dragan.jpg" alt="" loading="lazy" />
+      <img data-p="andrew-critch.jpg" src="andrew-critch.jpg" alt="" loading="lazy" />
+      <img data-p="andrew-yao.jpg" src="andrew-yao.jpg" alt="" loading="lazy" />
+      <img data-p="audrey-tang.jpg" src="audrey-tang.jpg" alt="" loading="lazy" />
+      <img data-p="beth-barnes.jpg" src="beth-barnes.jpg" alt="" loading="lazy" />
+      <img data-p="boaz-barak.jpg" src="boaz-barak.jpg" alt="" loading="lazy" />
+      <img data-p="brian-christian.jpg" src="brian-christian.jpg" alt="" loading="lazy" />
+      <img data-p="buck-shlegeris.jpg" src="buck-shlegeris.jpg" alt="" loading="lazy" />
+      <img data-p="chris-olah.jpg" src="chris-olah.jpg" alt="" loading="lazy" />
+      <img data-p="collin-burns.jpg" src="collin-burns.jpg" alt="" loading="lazy" />
+      <img data-p="connor-leahy.jpg" src="connor-leahy.jpg" alt="" loading="lazy" />
+      <img data-p="dan-hendrycks.jpg" src="dan-hendrycks.jpg" alt="" loading="lazy" />
+      <img data-p="daniel-kokotajlo.jpg" src="daniel-kokotajlo.jpg" alt="" loading="lazy" />
+      <img data-p="dario-amodei.jpg" src="dario-amodei.jpg" alt="" loading="lazy" />
+      <img data-p="david-krueger.jpg" src="david-krueger.jpg" alt="" loading="lazy" />
+      <img data-p="demis-hassabis.jpg" src="demis-hassabis.jpg" alt="" loading="lazy" />
+      <img data-p="dylan-hadfield-menell.jpg" src="dylan-hadfield-menell.jpg" alt="" loading="lazy" />
+      <img data-p="eliezer-yudkowsky.jpg" src="eliezer-yudkowsky.jpg" alt="" loading="lazy" />
+      <img data-p="elon-musk.jpg" src="elon-musk.jpg" alt="" loading="lazy" />
+      <img data-p="ethan-perez.jpg" src="ethan-perez.jpg" alt="" loading="lazy" />
+      <img data-p="evan-hubinger.jpg" src="evan-hubinger.jpg" alt="" loading="lazy" />
+      <img data-p="fei-fei-li.jpg" src="fei-fei-li.jpg" alt="" loading="lazy" />
+      <img data-p="gary-marcus.jpg" src="gary-marcus.jpg" alt="" loading="lazy" />
+      <img data-p="geoffrey-hinton.jpg" src="geoffrey-hinton.jpg" alt="" loading="lazy" />
+      <img data-p="geoffrey-irving.jpg" src="geoffrey-irving.jpg" alt="" loading="lazy" />
+      <img data-p="helen-toner.jpg" src="helen-toner.jpg" alt="" loading="lazy" />
+      <img data-p="holden-karnofsky.jpg" src="holden-karnofsky.jpg" alt="" loading="lazy" />
+      <img data-p="i-j-good.jpg" src="i-j-good.jpg" alt="" loading="lazy" />
+      <img data-p="ilya-sutskever.jpg" src="ilya-sutskever.jpg" alt="" loading="lazy" />
+      <img data-p="jaan-tallinn.jpg" src="jaan-tallinn.jpg" alt="" loading="lazy" />
+      <img data-p="jack-clark.jpg" src="jack-clark.jpg" alt="" loading="lazy" />
+      <img data-p="jacob-hilton.jpg" src="jacob-hilton.jpg" alt="" loading="lazy" />
+      <img data-p="jacob-steinhardt.jpg" src="jacob-steinhardt.jpg" alt="" loading="lazy" />
+      <img data-p="jade-leung.jpg" src="jade-leung.jpg" alt="" loading="lazy" />
+      <img data-p="jan-leike.jpg" src="jan-leike.jpg" alt="" loading="lazy" />
+      <img data-p="jared-kaplan.jpg" src="jared-kaplan.jpg" alt="" loading="lazy" />
+      <img data-p="jeffrey-ladish.jpg" src="jeffrey-ladish.jpg" alt="" loading="lazy" />
+      <img data-p="jesse-hoogland.jpg" src="jesse-hoogland.jpg" alt="" loading="lazy" />
+      <img data-p="joshua-achiam.jpg" src="joshua-achiam.jpg" alt="" loading="lazy" />
+      <img data-p="joy-buolamwini.jpg" src="joy-buolamwini.jpg" alt="" loading="lazy" />
+      <img data-p="kate-crawford.jpg" src="kate-crawford.jpg" alt="" loading="lazy" />
+      <img data-p="katja-grace.jpg" src="katja-grace.jpg" alt="" loading="lazy" />
+      <img data-p="lee-sharkey.jpg" src="lee-sharkey.jpg" alt="" loading="lazy" />
+      <img data-p="leopold-aschenbrenner.jpg" src="leopold-aschenbrenner.jpg" alt="" loading="lazy" />
+      <img data-p="lilian-weng.jpg" src="lilian-weng.jpg" alt="" loading="lazy" />
+      <img data-p="marius-hobbhahn.jpg" src="marius-hobbhahn.jpg" alt="" loading="lazy" />
+      <img data-p="max-tegmark.jpg" src="max-tegmark.jpg" alt="" loading="lazy" />
+      <img data-p="michael-cohen.jpg" src="michael-cohen.jpg" alt="" loading="lazy" />
+      <img data-p="miles-brundage.jpg" src="miles-brundage.jpg" alt="" loading="lazy" />
+      <img data-p="mrinank-sharma.jpg" src="mrinank-sharma.jpg" alt="" loading="lazy" />
+      <img data-p="nate-soares.jpg" src="nate-soares.jpg" alt="" loading="lazy" />
+      <img data-p="neel-nanda.jpg" src="neel-nanda.jpg" alt="" loading="lazy" />
+      <img data-p="nick-bostrom.jpg" src="nick-bostrom.jpg" alt="" loading="lazy" />
+      <img data-p="norbert-wiener.jpg" src="norbert-wiener.jpg" alt="" loading="lazy" />
+      <img data-p="owain-evans.jpg" src="owain-evans.jpg" alt="" loading="lazy" />
+      <img data-p="paul-christiano.jpg" src="paul-christiano.jpg" alt="" loading="lazy" />
+      <img data-p="richard-ngo.jpg" src="richard-ngo.jpg" alt="" loading="lazy" />
+      <img data-p="robert-miles.jpg" src="robert-miles.jpg" alt="" loading="lazy" />
+      <img data-p="rohin-shah.jpg" src="rohin-shah.jpg" alt="" loading="lazy" />
+      <img data-p="roman-yampolskiy.jpg" src="roman-yampolskiy.jpg" alt="" loading="lazy" />
+      <img data-p="rumman-chowdhury.jpg" src="rumman-chowdhury.jpg" alt="" loading="lazy" />
+      <img data-p="ryan-greenblatt.jpg" src="ryan-greenblatt.jpg" alt="" loading="lazy" />
+      <img data-p="sam-altman.jpg" src="sam-altman.jpg" alt="" loading="lazy" />
+      <img data-p="sam-bowman.jpg" src="sam-bowman.jpg" alt="" loading="lazy" />
+      <img data-p="sam-marks.jpg" src="sam-marks.jpg" alt="" loading="lazy" />
+      <img data-p="scott-aaronson.jpg" src="scott-aaronson.jpg" alt="" loading="lazy" />
+      <img data-p="shane-legg.jpg" src="shane-legg.jpg" alt="" loading="lazy" />
+      <img data-p="stephen-casper.jpg" src="stephen-casper.jpg" alt="" loading="lazy" />
+      <img data-p="stephen-hawking.jpg" src="stephen-hawking.jpg" alt="" loading="lazy" />
+      <img data-p="stuart-russell.jpg" src="stuart-russell.jpg" alt="" loading="lazy" />
+      <img data-p="timnit-gebru.jpg" src="timnit-gebru.jpg" alt="" loading="lazy" />
+      <img data-p="toby-ord.jpg" src="toby-ord.jpg" alt="" loading="lazy" />
+      <img data-p="tom-davidson.jpg" src="tom-davidson.jpg" alt="" loading="lazy" />
+      <img data-p="trenton-bricken.jpg" src="trenton-bricken.jpg" alt="" loading="lazy" />
+      <img data-p="tristan-harris.jpg" src="tristan-harris.jpg" alt="" loading="lazy" />
+      <img data-p="vanessa-kosoy.jpg" src="vanessa-kosoy.jpg" alt="" loading="lazy" />
+      <img data-p="victoria-krakovna.jpg" src="victoria-krakovna.jpg" alt="" loading="lazy" />
+      <img data-p="william-saunders.jpg" src="william-saunders.jpg" alt="" loading="lazy" />
+      <img data-p="yoshua-bengio.jpg" src="yoshua-bengio.jpg" alt="" loading="lazy" />
+      <img data-p="yuval-noah-harari.jpg" src="yuval-noah-harari.jpg" alt="" loading="lazy" />
+      <img data-p="zhang-ya-qin.jpg" src="zhang-ya-qin.jpg" alt="" loading="lazy" />
+      <img data-p="zico-kolter.jpg" src="zico-kolter.jpg" alt="" loading="lazy" />
+    </div>
+
+    <script src="data-1.js"></script>
+    <script src="data-2.js"></script>
+    <script src="data-3.js"></script>
+    <script src="data-4.js"></script>
+    <script src="data-5.js"></script>
+    <script src="data-6.js"></script>
+    <script src="hark.js"></script>
+    <script src="chart.js"></script>
+    <script src="datalabels.js"></script>
+    <script src="hark-charts.js"></script>
+    <script>
+      (function () {
+        window.DATA = window.__SD || [];
+        var DATA = window.DATA;
+        var CATS = [
+          ["lab-safety", "Frontier Lab Safety"],
+          ["academic-alignment", "Academic Alignment"],
+          ["independent-org", "Independent Orgs"],
+          ["interpretability", "Interpretability"],
+          ["governance-policy", "Governance & Policy"],
+          ["pioneer-public-voice", "Pioneers & Public Voices"]
+        ];
+        var CAT_LABEL = {}, CAT_ORDER = {};
+        CATS.forEach(function (c, i) { CAT_LABEL[c[0]] = c[1]; CAT_ORDER[c[0]] = i; });
+        var BY_SLUG = {};
+        DATA.forEach(function (r) { BY_SLUG[r.slug] = r; });
+
+        // Photos: read from the static bank so they travel with the page.
+        var PHOTO = {};
+        [].forEach.call(document.querySelectorAll("#photo-bank img"), function (im) { PHOTO[im.getAttribute("data-p")] = im.getAttribute("src"); });
+
+        function esc(s) {
+          return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; });
+        }
+        function safeUrl(u) { return /^https?:\/\//i.test(u || "") ? esc(u) : ""; }
+        function ext(u, label, cls) {
+          var h = safeUrl(u);
+          return h ? '<a class="' + (cls || "link") + '" href="' + h + '" target="_blank" rel="noopener">' + label + "</a>" : "";
+        }
+        function initials(name) {
+          var parts = name.replace(/\(.*?\)/g, "").trim().split(/\s+/);
+          return ((parts[0] || "")[0] + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase();
+        }
+        function avatar(r, size, decorative) {
+          var src = r.photo && PHOTO[r.photo];
+          var st = size ? ' style="--av:' + size + 'px"' : "";
+          if (src) return '<img class="x-av"' + st + ' src="' + esc(src) + '" alt="' + (decorative ? "" : "Portrait of " + esc(r.name)) + '" />';
+          return '<span class="x-av x-av--init"' + st + ' aria-hidden="true">' + esc(initials(r.name)) + "</span>";
+        }
+        function arr(x) { return Array.isArray(x) ? x : []; }
+
+        // Headline figures
+        var totals = {
+          people: DATA.length,
+          quotes: DATA.reduce(function (n, r) { return n + arr(r.quotes).length; }, 0),
+          interviews: DATA.reduce(function (n, r) { return n + arr(r.interviews).length; }, 0),
+          cats: new Set(DATA.map(function (r) { return r.category; })).size
+        };
+        [].forEach.call(document.querySelectorAll("[data-stat]"), function (el) { el.textContent = totals[el.getAttribute("data-stat")]; });
+
+        // ---------- Quote wall ----------
+        var PICKS = ["alan-turing", "geoffrey-hinton", "stephen-hawking", "yoshua-bengio", "jan-leike", "i-j-good", "stuart-russell", "eliezer-yudkowsky", "chris-olah", "nick-bostrom", "norbert-wiener", "helen-toner", "paul-christiano", "timnit-gebru"];
+        var slides = [];
+        PICKS.forEach(function (s) {
+          var r = BY_SLUG[s];
+          if (!r || slides.length >= 12) return;
+          var q = arr(r.quotes).filter(function (q) { return q.text && q.text.length < 220 && !q.unverified && safeUrl(q.source_url); })[0];
+          if (q) slides.push({ r: r, q: q });
+        });
+        var track = document.getElementById("quote-track");
+        track.innerHTML = slides.map(function (s, i) {
+          return '<figure class="x-slide' + (i === 0 ? " is-active" : "") + '" aria-roledescription="slide" aria-label="' + (i + 1) + " of " + slides.length + '"' + (i ? ' aria-hidden="true"' : "") + ">" +
+            "<blockquote>" + esc(s.q.text.trim()) + "</blockquote>" +
+            "<figcaption>" + avatar(s.r, 48, true) +
+            '<span class="x-slide__who"><strong>' + esc(s.r.name) + "</strong><span>" + esc(s.q.context || "") + "</span></span>" +
+            ext(s.q.source_url, "Source", "btn") +
+            ' <a class="btn" href="#' + esc(s.r.slug) + '">Profile</a>' +
+            "</figcaption></figure>";
+        }).join("");
+        var qi = 0, qTimer = null, paused = false;
+        var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var qCount = document.getElementById("quote-count"), qPause = document.getElementById("quote-pause");
+        function showQuote(n) {
+          var els = track.children;
+          if (!els.length) return;
+          qi = (n + els.length) % els.length;
+          [].forEach.call(els, function (el, i) {
+            el.classList.toggle("is-active", i === qi);
+            if (i === qi) el.removeAttribute("aria-hidden"); else el.setAttribute("aria-hidden", "true");
+            [].forEach.call(el.querySelectorAll("a"), function (a) { a.tabIndex = i === qi ? 0 : -1; });
+          });
+          qCount.textContent = qi + 1 + " / " + els.length;
+        }
+        function startQ() { stopQ(); if (!paused && !reduce) qTimer = setInterval(function () { showQuote(qi + 1); }, 8000); }
+        function stopQ() { if (qTimer) clearInterval(qTimer); qTimer = null; }
+        document.getElementById("quote-prev").onclick = function () { showQuote(qi - 1); startQ(); };
+        document.getElementById("quote-next").onclick = function () { showQuote(qi + 1); startQ(); };
+        if (reduce) paused = true;
+        function syncPause() { qPause.textContent = paused ? "Play" : "Pause"; qPause.setAttribute("aria-label", paused ? "Start rotation" : "Pause rotation"); track.setAttribute("aria-live", paused ? "polite" : "off"); }
+        qPause.onclick = function () { paused = !paused; syncPause(); paused ? stopQ() : startQ(); };
+        var qBox = track.parentNode;
+        qBox.addEventListener("mouseenter", stopQ);
+        qBox.addEventListener("mouseleave", startQ);
+        qBox.addEventListener("focusin", stopQ);
+        qBox.addEventListener("focusout", startQ);
+        syncPause(); showQuote(0); startQ();
+
+        // ---------- Directory ----------
+        var state = { q: "", cat: "all", sort: "az", org: null };
+        var grid = document.getElementById("grid"), statusEl = document.getElementById("status");
+        var filters = document.getElementById("filters");
+        function norm(s) { return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+        DATA.forEach(function (r) {
+          r._hay = norm([r.name, r.current_role, arr(r.orgs_history).join(" "), r.known_for, arr(r.key_ideas).join(" "), r.country].join(" | "));
+        });
+        var counts = {};
+        DATA.forEach(function (r) { counts[r.category] = (counts[r.category] || 0) + 1; });
+        filters.innerHTML = '<button class="x-filter" type="button" data-cat="all" aria-pressed="true">All <span>' + DATA.length + "</span></button>" +
+          CATS.map(function (c) { return '<button class="x-filter" type="button" data-cat="' + c[0] + '" aria-pressed="false">' + esc(c[1]) + " <span>" + (counts[c[0]] || 0) + "</span></button>"; }).join("");
+        filters.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-cat]");
+          if (!b) return;
+          state.cat = b.getAttribute("data-cat"); state.org = null;
+          [].forEach.call(filters.children, function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+          render();
+        });
+        var qInput = document.getElementById("q");
+        qInput.addEventListener("input", function () { state.q = qInput.value; state.org = null; render(); });
+        document.getElementById("sort").addEventListener("change", function (e) { state.sort = e.target.value; render(); });
+
+        var visible = DATA.slice();
+        function render() {
+          var terms = norm(state.q).split(/\s+/).filter(Boolean);
+          visible = DATA.filter(function (r) {
+            if (state.cat !== "all" && r.category !== state.cat) return false;
+            if (state.org && !state.org.re.test(r.current_role || "")) return false;
+            return terms.every(function (t) { return r._hay.indexOf(t) > -1; });
+          });
+          visible.sort(function (a, b) {
+            if (state.sort === "cat" && a.category !== b.category) return CAT_ORDER[a.category] - CAT_ORDER[b.category];
+            return a.name.localeCompare(b.name);
+          });
+          grid.innerHTML = visible.length ? visible.map(function (r) {
+            return '<button class="x-card" type="button" data-slug="' + esc(r.slug) + '" aria-label="Open profile: ' + esc(r.name) + '">' +
+              avatar(r, 0, true) +
+              "<h3>" + esc(r.name) + "</h3>" +
+              '<p class="x-card__role">' + esc(r.current_role) + "</p>" +
+              '<p class="x-card__known">' + esc(r.known_for) + "</p>" +
+              '<span class="pill">' + esc(CAT_LABEL[r.category] || r.category) + "</span></button>";
+          }).join("") : '<p class="x-empty">No one matches that search. Try a shorter word or another category.</p>';
+          statusEl.textContent = "Showing " + visible.length + " of " + DATA.length + " people" + (state.q.trim() ? " for “" + state.q.trim() + "”" : "") + (state.org ? " now at " + state.org.name + " · type a search or pick a category to clear" : "");
+        }
+        grid.addEventListener("click", function (e) {
+          var c = e.target.closest("[data-slug]");
+          if (c) { lastFocus = c; location.hash = c.getAttribute("data-slug"); }
+        });
+        render();
+
+        // ---------- Profile drawer ----------
+        var overlay = document.getElementById("overlay"), drawer = document.getElementById("drawer"), body = document.getElementById("pro-body");
+        var page = document.querySelector(".page"), current = null, lastFocus = null;
+        var LINKS = [["website", "Website"], ["x", "X"], ["scholar", "Google Scholar"], ["wikipedia", "Wikipedia"], ["github", "GitHub"], ["substack", "Substack"]];
+        var PLAY = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>';
+
+        function block(title, html) { return html ? '<section class="x-block"><h3>' + title + "</h3>" + html + "</section>" : ""; }
+        function profileHTML(r) {
+          var h = "";
+          var tags = '<span class="pill">' + esc(CAT_LABEL[r.category] || r.category) + "</span>" + (r.country ? ' <span class="pill">' + esc(r.country) + "</span>" : "");
+          var hon = arr(r.honours).length ? '<ul class="x-honours" aria-label="Honours">' + arr(r.honours).map(function (x) { return '<li><span class="chip chip--solid">' + esc(x) + "</span></li>"; }).join("") + "</ul>" : "";
+          h += '<header class="x-pro__head">' + avatar(r, 0, false) + '<div class="x-pro__meta"><h2 id="pro-name">' + esc(r.name) + '</h2><p class="x-pro__role">' + esc(r.current_role) + '</p><div class="x-tags">' + tags + "</div>" + hon + "</div></header>";
+
+          var orgs = arr(r.orgs_history);
+          if (orgs.length) {
+            h += block("Career", '<ol class="timeline">' + orgs.map(function (o, i) {
+              var m = String(o).match(/^(.*?)\s*\(([^()]*)\)\s*$/);
+              var what = m ? m[1] : o, when = m ? m[2] : "—";
+              var cur = i === 0 && /[–-]\s*$|present|now/i.test(when);
+              return "<li" + (cur ? ' class="is-current"' : "") + '><p class="timeline__when">' + esc(when) + '</p><div class="timeline__what">' + esc(what) + "</div></li>";
+            }).join("") + "</ol>");
+          }
+          if (r.bio) h += block("Bio", '<div class="prose"><p>' + esc(r.bio) + "</p></div>");
+          if (arr(r.key_ideas).length) h += block("Key ideas", '<div class="x-tags">' + arr(r.key_ideas).map(function (k) { return '<span class="pill">' + esc(k) + "</span>"; }).join("") + "</div>");
+          if (r.p_doom_or_stance) h += '<div class="aside"><h3>Stance on AI risk</h3><p>' + esc(r.p_doom_or_stance) + "</p></div>";
+
+          if (arr(r.quotes).length) {
+            h += block("Quotes", arr(r.quotes).map(function (q) {
+              return '<figure class="x-quote"><blockquote>“' + esc(String(q.text).trim()) + '”</blockquote><figcaption>' +
+                (q.context ? "<span>" + esc(q.context) + "</span>" : "") +
+                ext(q.source_url, "Source") +
+                (q.unverified ? ' <span class="chip">unverified</span>' : "") + "</figcaption></figure>";
+            }).join(""));
+          }
+          if (arr(r.interviews).length) {
+            h += block("Interviews &amp; talks", '<div class="x-ivs">' + arr(r.interviews).map(function (v) {
+              var yt = v.youtube_id && /^[\w-]{6,20}$/.test(v.youtube_id) ? v.youtube_id : "";
+              var ytUrl = yt ? "https://www.youtube.com/watch?v=" + yt : "";
+              var thumb = yt ? '<a class="x-iv__thumb" href="' + ytUrl + '" target="_blank" rel="noopener" aria-label="Watch on YouTube: ' + esc(v.title) + '"><img src="https://i.ytimg.com/vi/' + yt + '/hqdefault.jpg" alt="" loading="lazy" /><span class="x-iv__play"><span>' + PLAY + "</span></span></a>" : "";
+              var meta = [v.outlet, v.year].filter(Boolean).map(esc).join(" · ");
+              var btns = '<div class="links">' + (yt ? ext(ytUrl, "YouTube", "btn") : "") + (v.url && v.url !== ytUrl ? ext(v.url, yt ? "Page" : "Open", "btn") : "") + "</div>";
+              return '<article class="x-iv">' + thumb + '<div class="x-iv__body"><p>' + esc(v.title) + "</p>" + (meta ? "<small>" + meta + "</small>" : "") + btns + "</div></article>";
+            }).join("") + "</div>");
+          }
+          if (arr(r.key_works).length) {
+            h += block("Key works", '<ul class="x-works">' + arr(r.key_works).map(function (w) {
+              var t = safeUrl(w.url) ? ext(w.url, esc(w.title)) : esc(w.title);
+              return "<li><span>" + t + "</span>" + (w.year ? '<span class="pill">' + esc(w.year) + "</span>" : "") + "</li>";
+            }).join("") + "</ul>");
+          }
+          var lk = r.links || {};
+          var links = LINKS.map(function (l) { return ext(lk[l[0]], l[1], "btn"); }).join("");
+          if (links) h += block("Links", '<div class="links">' + links + "</div>");
+          return h;
+        }
+        function navList() { return current && visible.indexOf(current) > -1 ? visible : DATA; }
+        function openProfile(r) {
+          var wasOpen = !overlay.hidden;
+          current = r;
+          body.innerHTML = profileHTML(r);
+          var list = navList(), i = list.indexOf(r);
+          document.getElementById("pro-pos").textContent = i + 1 + " of " + list.length;
+          document.title = r.name + " — The Guardians of AI";
+          drawer.scrollTop = 0;
+          if (!wasOpen) {
+            if (!lastFocus) lastFocus = document.activeElement;
+            overlay.hidden = false;
+            page.inert = true;
+            document.documentElement.style.overflow = "hidden";
+            requestAnimationFrame(function () { overlay.classList.add("is-open"); });
+            stopQ();
+          }
+          document.getElementById("pro-close").focus();
+        }
+        function closeProfile() {
+          if (overlay.hidden) return;
+          overlay.classList.remove("is-open");
+          overlay.hidden = true;
+          page.inert = false;
+          document.documentElement.style.overflow = "";
+          document.title = "The Guardians of AI — Who's Who of AI Safety & Alignment";
+          var slug = current && current.slug;
+          current = null;
+          var target = (slug && grid.querySelector('[data-slug="' + slug + '"]')) || lastFocus;
+          lastFocus = null;
+          if (target && target.focus) target.focus();
+          startQ();
+        }
+        function clearHash() {
+          try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { location.hash = ""; }
+          closeProfile();
+        }
+        function step(d) {
+          var list = navList(), i = list.indexOf(current);
+          var next = list[(i + d + list.length) % list.length];
+          location.hash = next.slug;
+        }
+        document.getElementById("pro-prev").onclick = function () { step(-1); };
+        document.getElementById("pro-next").onclick = function () { step(1); };
+        document.getElementById("pro-close").onclick = clearHash;
+        overlay.addEventListener("click", function (e) { if (e.target === overlay) clearHash(); });
+        document.addEventListener("keydown", function (e) {
+          if (overlay.hidden) return;
+          if (e.key === "Escape") { e.preventDefault(); clearHash(); }
+          else if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && !/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) step(e.key === "ArrowLeft" ? -1 : 1);
+          else if (e.key === "Tab") {
+            var f = drawer.querySelectorAll('a[href], button:not([disabled])');
+            if (!f.length) return;
+            var first = f[0], last = f[f.length - 1];
+            if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+          }
+        });
+        function fromHash() {
+          var slug = decodeURIComponent(location.hash.slice(1));
+          var r = BY_SLUG[slug];
+          if (r) openProfile(r); else closeProfile();
+        }
+        window.addEventListener("hashchange", fromHash);
+        fromHash();
+
+        // ---------- Map of the field ----------
+        var catData = CATS.map(function (c) { return { label: c[1], n: counts[c[0]] || 0 }; });
+        var top = catData.slice().sort(function (a, b) { return b.n - a.n; })[0];
+        document.getElementById("cat-cap").innerHTML = esc(top.label) + " is the largest group, with " + top.n + " of " + DATA.length + " people<small>People per category</small>";
+        document.getElementById("cat-chart").setAttribute("aria-label", catData.map(function (d) { return d.label + " " + d.n; }).join(", "));
+        new Chart(document.getElementById("cat-chart"), {
+          type: "bar",
+          data: { labels: catData.map(function (d) { return d.label; }), datasets: [{ label: "People", data: catData.map(function (d) { return d.n; }) }] },
+          options: { indexAxis: "y", scales: { x: { ticks: { stepSize: 5 } } }, plugins: { legend: { display: false }, datalabels: Hark.labels.values } }
+        });
+
+        var ORGS = [
+          ["Anthropic", /anthropic/i], ["OpenAI", /openai/i], ["Google DeepMind", /deepmind/i], ["Safe Superintelligence", /safe superintelligence/i],
+          ["xAI", /\bxai\b/i], ["METR", /\bmetr\b/i], ["MIRI", /\bmiri\b|machine intelligence research/i], ["Alignment Research Center", /alignment research center/i],
+          ["Redwood Research", /redwood/i], ["Apollo Research", /apollo research/i], ["CHAI, UC Berkeley", /\bchai\b|human-compatible/i],
+          ["Center for AI Safety", /center for ai safety|\bcais\b/i], ["Future of Life Institute", /future of life/i], ["LawZero", /lawzero/i],
+          ["FAR.AI", /far\.ai/i], ["ControlAI", /controlai/i], ["Palisade Research", /palisade/i], ["Timaeus", /timaeus/i], ["Goodfire", /goodfire/i],
+          ["Transluce", /transluce/i], ["AI Futures Project", /ai futures project/i], ["AI Impacts", /ai impacts/i], ["Forethought", /forethought/i],
+          ["Truthful AI", /truthful ai/i], ["UK AI Security Institute", /uk ai security|\baisi\b/i], ["US CAISI", /caisi/i],
+          ["Centre for the Governance of AI", /governance of ai/i], ["CSET, Georgetown", /\bcset\b/i], ["Institute for Progress", /institute for progress/i],
+          ["UC Berkeley", /berkeley/i], ["MIT", /\bmit\b/i], ["Harvard", /harvard/i], ["Stanford", /stanford/i], ["Oxford", /oxford/i],
+          ["Université de Montréal / Mila", /montr[ée]al|mila\b/i], ["University of Toronto", /toronto/i], ["Carnegie Mellon", /carnegie mellon/i],
+          ["Tsinghua", /tsinghua/i], ["Chinese Academy of Sciences", /chinese academy/i], ["UN AI advisory body", /\bun\b.*advisory|advisory body/i],
+          ["Center for Humane Technology", /humane technology/i], ["Humane Intelligence", /humane intelligence/i], ["DAIR", /\bdair\b/i],
+          ["Algorithmic Justice League", /algorithmic justice/i], ["PauseAI US", /pauseai/i], ["Microsoft Research", /microsoft research/i], ["World Labs", /world labs/i]
+        ];
+        var orgCounts = ORGS.map(function (o) { return { name: o[0], n: DATA.filter(function (r) { return o[1].test(r.current_role || ""); }).length, re: o[1] }; })
+          .filter(function (o) { return o.n > 0; })
+          .sort(function (a, b) { return b.n - a.n || a.name.localeCompare(b.name); });
+        var orgBox = document.getElementById("orgs");
+        orgBox.innerHTML = orgCounts.map(function (o, i) { return '<button class="x-filter" type="button" data-org="' + i + '">' + esc(o.name) + " <span>" + o.n + "</span></button>"; }).join("");
+        orgBox.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-org]");
+          if (!b) return;
+          var o = orgCounts[+b.getAttribute("data-org")];
+          qInput.value = ""; state.q = ""; state.cat = "all"; state.org = o;
+          [].forEach.call(filters.children, function (x) { x.setAttribute("aria-pressed", x.getAttribute("data-cat") === "all" ? "true" : "false"); });
+          render();
+          document.getElementById("directory").scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+        });
+      })();
+    </script>
+  </body>
+</html>
