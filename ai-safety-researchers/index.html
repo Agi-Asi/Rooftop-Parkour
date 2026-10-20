@@ -1347,14 +1347,16 @@
           drawer.scrollTop = 0;
           if (!wasOpen) {
             if (!lastFocus) lastFocus = document.activeElement;
+            savedY = window.scrollY || window.pageYOffset || 0;
             overlay.hidden = false;
             page.inert = true;
             document.documentElement.style.overflow = "hidden";
             requestAnimationFrame(function () { overlay.classList.add("is-open"); });
             stopQ();
           }
-          document.getElementById("pro-close").focus();
+          document.getElementById("pro-close").focus({ preventScroll: true });
         }
+        var savedY = null;
         function closeProfile() {
           if (overlay.hidden) return;
           overlay.classList.remove("is-open");
@@ -1364,9 +1366,12 @@
           document.title = "The Guardians of AI — Who's Who of AI Safety & Alignment";
           var slug = current && current.slug;
           current = null;
-          var target = (slug && grid.querySelector('[data-slug="' + slug + '"]')) || lastFocus;
+          var target = (lastFocus && lastFocus !== document.body && document.contains(lastFocus)) ? lastFocus : null;
           lastFocus = null;
-          if (target && target.focus) target.focus();
+          var y = savedY; savedY = null;
+          if (y !== null) window.scrollTo({ top: y, left: 0, behavior: "instant" });
+          if (target && target.focus) { try { target.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
+          if (y !== null) { requestAnimationFrame(function () { if (Math.abs((window.scrollY || 0) - y) > 2) window.scrollTo({ top: y, left: 0, behavior: "instant" }); }); }
           startQ();
         }
         function clearHash() {
@@ -1467,5 +1472,6 @@
     <script src="extras17.js"></script>
     <script src="links18.js"></script>
     <script src="power19.js"></script>
+    <script src="trust20.js" defer></script><script src="readmeta.js" defer></script><script src="reading21.js" defer></script>
   </body>
 </html>
