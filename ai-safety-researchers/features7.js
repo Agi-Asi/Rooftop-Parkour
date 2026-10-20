@@ -1,4 +1,4 @@
-/* Round B1: Theater — browse 317 verified YouTube videos, filter, sort, and play them in a lights-off modal. */
+/* Round B1: Theater — browse every verified YouTube video, filter, sort, and play them in a lights-off modal. */
 (function () {
   "use strict";
   var doc = document;
